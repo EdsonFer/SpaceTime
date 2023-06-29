@@ -1,34 +1,32 @@
-import { FastifyInstance } from "fastify";
-import { prisma } from "../lib/prisma";
-import { z } from "zod";
+import { FastifyInstance } from 'fastify';
+import { prisma } from '../lib/prisma';
+import { z } from 'zod';
 
 export async function memoriesRoutes(app: FastifyInstance) {
   app.addHook('preHandler', async (request) => {
     await request.jwtVerify();
   });
 
-  app.get("/memories", async (request, reply) => {
+  app.get('/memories', async (request, reply) => {
     const memories = await prisma.memory.findMany({
       where: {
-        userId: request.user.sub
+        userId: request.user.sub,
       },
       orderBy: {
-        createdAt: "asc",
-      }
+        createdAt: 'asc',
+      },
     });
 
-    return memories.map(memory => {
+    return memories.map((memory) => {
       return {
         id: memory.id,
         coverUrl: memory.coverUrl,
-        excerpt: memory.content.substring(0, 115).concat("..."),
-      }
+        excerpt: memory.content.substring(0, 115).concat('...'),
+      };
     });
   });
 
-
-  app.get("/memories/:id", async (request, reply) => {
-
+  app.get('/memories/:id', async (request, reply) => {
     const paramsSchema = z.object({
       id: z.string().uuid(),
     });
@@ -45,10 +43,10 @@ export async function memoriesRoutes(app: FastifyInstance) {
       return reply.status(401).send();
     }
 
-    return memory
+    return memory;
   });
 
-  app.post("/memories", async (request, reply) => {
+  app.post('/memories', async (request, reply) => {
     const bodySchema = z.object({
       content: z.string(),
       coverUrl: z.string(),
@@ -63,13 +61,13 @@ export async function memoriesRoutes(app: FastifyInstance) {
         isPublic,
         coverUrl,
         userId: request.user.sub,
-      }
+      },
     });
 
     return memory;
   });
 
-  app.put("/memories/:id", async (request, reply) => {
+  app.put('/memories/:id', async (request, reply) => {
     const paramsSchema = z.object({
       id: z.string().uuid(),
     });
@@ -102,12 +100,12 @@ export async function memoriesRoutes(app: FastifyInstance) {
         content,
         isPublic,
         coverUrl,
-      }
-    })
-    return memory
+      },
+    });
+    return memory;
   });
 
-  app.delete("/memories/:id", async (request, reply) => {
+  app.delete('/memories/:id', async (request, reply) => {
     const paramsSchema = z.object({
       id: z.string().uuid(),
     });
