@@ -14,12 +14,11 @@ export async function uploadRoutes(app: FastifyInstance) {
         fileSize: 5_242_880, // 5MB
       },
     });
-
     if (!upload) {
       return reply.status(400).send();
     }
 
-    const mimeTypeRegex = /^(image|video)\[a-zA-Z]+/;
+    const mimeTypeRegex = /^(image\/(jpeg|jpg|png)|video\/(mp4|mov))$/i;
     const isValidFileFormat = mimeTypeRegex.test(upload.mimetype);
 
     if (!isValidFileFormat) {
@@ -31,15 +30,14 @@ export async function uploadRoutes(app: FastifyInstance) {
 
     const filename = fileId.concat(extension);
 
-    const writeStrem = createWriteStream(
+    const writeStream = createWriteStream(
       resolve(__dirname, '../../uploads', filename)
     );
 
-    await pump(upload.file, writeStrem);
+    await pump(upload.file, writeStream);
 
     const fullUrl = request.protocol.concat('://').concat(request.hostname);
     const fileUrl = new URL(`/uploads/${filename}`, fullUrl).toString();
-
     return { fileUrl };
   });
 }

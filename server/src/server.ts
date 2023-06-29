@@ -3,6 +3,7 @@ import 'dotenv/config';
 import fastify from 'fastify';
 import cors from '@fastify/cors';
 import jwt from '@fastify/jwt';
+import fastifyStatic from '@fastify/static';
 import { memoriesRoutes } from './routes/memories';
 import { authRoutes } from './routes/auth';
 import multipart from '@fastify/multipart';
@@ -13,7 +14,7 @@ const app = fastify();
 
 app.register(multipart);
 
-app.register(require('fastify-static'), {
+app.register(fastifyStatic, {
   root: resolve(__dirname, '../uploads'),
   prefix: '/uploads',
 });
